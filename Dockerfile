@@ -1,4 +1,4 @@
-FROM sameersbn/ubuntu:14.04.20150504
+FROM index.alauda.cn/georce/ubuntu:14.04.20150504
 MAINTAINER sameer@damagehead.com
 
 RUN apt-get update \
