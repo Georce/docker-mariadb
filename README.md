@@ -23,7 +23,7 @@ Dockerfile to build a MySQL container image which can be linked to other contain
 If you find this image useful here's how you can help:
 
 - Send a Pull Request with your awesome new features and bug fixes
-- Help new users with [Issues](https://github.com/sameersbn/docker-mysql/issues) they may encounter
+- Help new users with [Issues](https://github.com/georce/docker-mariadb/issues) they may encounter
 - Send me a tip via [Bitcoin](https://www.coinbase.com/sameersbn) or using [Gratipay](https://gratipay.com/sameersbn/)
 
 # Reporting Issues
@@ -45,7 +45,7 @@ sudo apt-get install lxc-docker
 
 Fedora and RHEL/CentOS users should try disabling selinux with `setenforce 0` and check if resolves the issue. If it does than there is not much that I can help you with. You can either stick with selinux disabled (not recommended by redhat) or switch to using ubuntu.
 
-If using the latest docker version and/or disabling selinux does not fix the issue then please file a issue request on the [issues](https://github.com/sameersbn/docker-mysql/issues) page.
+If using the latest docker version and/or disabling selinux does not fix the issue then please file a issue request on the [issues](https://github.com/georce/docker-mariadb/issues) page.
 
 In your issue report please make sure you provide the following information:
 
@@ -59,29 +59,29 @@ In your issue report please make sure you provide the following information:
 Pull the latest version of the image from the docker index. This is the recommended method of installation as it is easier to update image in the future. These builds are performed by the **Docker Trusted Build** service.
 
 ```bash
-docker pull sameersbn/mysql:latest
+docker pull index.alauda.cn/georce/mariadb:latest
 ```
 
 Alternately you can build the image yourself.
 
 ```bash
-git clone https://github.com/sameersbn/docker-mysql.git
-cd docker-mysql
-docker build -t="$USER/mysql" .
+git clone https://github.com/georce/docker-mariadb.git
+cd docker-mariadb
+docker build -t="$USER/mariadb" .
 ```
 
 # Quick Start
 
-Run the mysql image
+Run the mariadb image
 
 ```bash
-docker run -name mysql -d sameersbn/mysql:latest
+docker run -name mariadb -d index.alauda.cn/georce/mariadb:latest
 ```
 
 You can access the mysql server as the root user using the following command:
 
 ```bash
-docker run -it --rm --volumes-from=mysql sameersbn/mysql:latest mysql -uroot
+docker run -it --rm --volumes-from=mariadb index.alauda.cn/georce/mariadb:latest mysql -uroot
 ```
 
 # Data Store
@@ -98,45 +98,34 @@ sudo chcon -Rt svirt_sandbox_file_t /opt/mysql/data
 The updated run command looks like this.
 
 ```
-docker run -name mysql -d \
-  -v /opt/mysql/data:/var/lib/mysql sameersbn/mysql:latest
+docker run -name mariadb -d \
+  -v /opt/mysql/data:/var/lib/mysql index.alauda.cn/georce/mariadb:latest
 ```
 
 This will make sure that the data stored in the database is not lost when the image is stopped and started again.
 
 # Creating User and Database at Launch
 
-> **NOTE**
->
-> For this feature to work the `debian-sys-maint` user needs to exist. This user is automatically created when the database is installed for the first time (firstrun).
->
-> However if you were using this image before this feature was added, then it will not work as-is. You are required to create the `debian-sys-maint` user
->
->```bash
->docker run -it --rm --volumes-from=mysql sameersbn/mysql \
->  mysql -uroot -e "GRANT ALL PRIVILEGES on *.* TO 'debian-sys-maint'@'localhost' IDENTIFIED BY '' WITH GRANT OPTION;"
->```
-
 To create a new database specify the database name in the `DB_NAME` variable. The following command creates a new database named *dbname*:
 
 ```bash
-docker run --name mysql -d \
-  -e 'DB_NAME=dbname' sameersbn/mysql:latest
+docker run --name mariadb -d \
+  -e 'DB_NAME=dbname' index.alauda.cn/georce/mariadb:latest
 ```
 
 You may also specify a comma separated list of database names in the `DB_NAME` variable. The following command creates two new databases named *dbname1* and *dbname2*
 
 ```bash
-docker run --name mysql -d \
--e 'DB_NAME=dbname1,dbname2' sameersbn/mysql:latest
+docker run --name mariadb -d \
+-e 'DB_NAME=dbname1,dbname2' index.alauda.cn/georce/mariadb:latest
 ```
 
 To create a new user you should specify the `DB_USER` and `DB_PASS` variables.
 
 ```bash
-docker run --name mysql -d \
+docker run --name mariadb -d \
   -e 'DB_USER=dbuser' -e 'DB_PASS=dbpass' -e 'DB_NAME=dbname' \
-  sameersbn/mysql:latest
+  index.alauda.cn/georce/mariadb:latest
 ```
 
 The above command will create a user *dbuser* with the password *dbpass* and will also create a database named *dbname*. The *dbuser* user will have full/remote access to the database.
@@ -151,9 +140,9 @@ The above command will create a user *dbuser* with the password *dbpass* and wil
 To create a remote user with privileged access, you need to specify the `DB_REMOTE_ROOT_NAME` and `DB_REMOTE_ROOT_PASS` variables, eg.
 
 ```bash
-docker run --name mysql -d \
+docker run --name mariadb -d \
   -e 'DB_REMOTE_ROOT_NAME=root' -e 'DB_REMOTE_ROOT_PASS=secretpassword' \
-  sameersbn/mysql:latest
+  index.alauda.cn/georce/mariadb:latest
 ```
 
 Optionally you can specify the `DB_REMOTE_ROOT_HOST` variable to define the address space within which remote access should be permitted. This defaults to `172.17.42.1` and should suffice for most cases.
@@ -168,7 +157,7 @@ Situations that would require you to override the default `DB_REMOTE_ROOT_HOST` 
 For debugging and maintenance purposes you may want access the containers shell. If you are using docker version `1.3.0` or higher you can access a running containers shell using `docker exec` command.
 
 ```bash
-docker exec -it mysql bash
+docker exec -it mariadb bash
 ```
 
 If you are using an older version of docker, you can use the [nsenter](http://man7.org/linux/man-pages/man1/nsenter.1.html) linux tool (part of the util-linux package) to access the container shell.
@@ -184,7 +173,7 @@ docker run --rm -v /usr/local/bin:/target jpetazzo/nsenter
 Now you can access the container shell using the command
 
 ```bash
-sudo docker-enter mysql
+sudo docker-enter mariadb
 ```
 
 For more information refer https://github.com/jpetazzo/nsenter
@@ -196,17 +185,17 @@ To upgrade to newer releases, simply follow this 3 step upgrade procedure.
 - **Step 1**: Stop the currently running image
 
 ```bash
-docker stop mysql
+docker stop mariadb
 ```
 
 - **Step 2**: Update the docker image.
 
 ```bash
-docker pull sameersbn/mysql:latest
+docker pull index.alauda.cn/georce/mariadb:latest
 ```
 
 - **Step 3**: Start the image
 
 ```bash
-docker run -name mysql -d [OPTIONS] sameersbn/mysql:latest
+docker run -name mariadb -d [OPTIONS] index.alauda.cn/georce/mariadb:latest
 ```
