@@ -1,4 +1,4 @@
-FROM index.alauda.cn/dockerlibrary/centos:6.6
+FROM index.alauda.cn/library/centos:6.6
 MAINTAINER sameer@damagehead.com & wujian@wujian360.cn
 
 COPY mariadb.repo /etc/yum.repos.d/mariadb.repo
